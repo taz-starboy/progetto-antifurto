@@ -1,0 +1,8 @@
+antifurto-service/mvnw text eol=lf
+notification-service/mvnw text eol=lf
+**/*.cmd text eol=crlf
+
+# Forza sempre line ending LF su questi file:
+# IMPORTANTE per leggere i file su docker
+antifurto-service/wait-for-db.sh text eol=lf
+**/*.sh text eol=lf

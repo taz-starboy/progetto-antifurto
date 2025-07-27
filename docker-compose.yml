@@ -1,0 +1,80 @@
+# Qui inizia la sezione in cui definiamo i servizi, cioè i container che Docker Compose deve creare.
+services:
+    
+    # Nome del servizio. Lo userai per collegarti da altri container (es: Spring Boot si collega a antifurto-db, non a localhost).
+    antifurto-db:
+        # Usa l'immagine ufficiale MySQL versione 8 da Docker Hub.
+        image: mysql:8
+        # Nome del container. Utile per riconoscerlo nei comandi docker ps, log, ecc. (opzionale ma consigliato).
+        container_name: antifurto-db-container
+        # Queste variabili d’ambiente configurano MySQL:
+        # MYSQL_ROOT_PASSWORD: password dell'utente root.
+        # MYSQL_DATABASE: nome del database che viene creato all’avvio.
+        # MYSQL_USER e MYSQL_PASSWORD: utente secondario creato col database.
+        environment:
+            MYSQL_ROOT_PASSWORD: root_password_secure
+            MYSQL_DATABASE: antifurto_database
+            MYSQL_USER: antifurto_app_user
+            MYSQL_PASSWORD: antifurto_app_pass
+        # Espone la porta 3306 (default di MySQL) dal container al tuo host.
+        # Serve per collegarti a MySQL con un client esterno, ad esempio DBeaver o IntelliJ.
+        ports:
+            - "3306:3306"
+        # Mappa la cartella /var/lib/mysql (dove MySQL salva i dati) su un volume persistente chiamato antifurto_mysql_data.
+        # Così i dati non si perdono se il container viene eliminato.
+        volumes:
+            - antifurto_mysql_data:/var/lib/mysql
+
+    antifurto-service:
+        image: antifurto-service:latest
+        # Invece di usare un’immagine da Docker Hub, la costruiamo localmente.
+        # context indica la cartella dove si trova il Dockerfile partendo dalla posizione del docker-compose.yml.
+        # dockerfile indica il nome del Dockerfile (opzionale se il Dockerfile si chiama Dockerfile).
+        build:
+            context: ./antifurto-service
+            dockerfile: Dockerfile
+        container_name: antifurto-service-container
+        # Docker avvia prima il servizio MySQL e poi il servizio Spring Boot.
+        # Non garantisce che MySQL sia già pronto (per questo si usa eventualmente restart: always o healthcheck), ma almeno avvia i container nell’ordine giusto.
+        depends_on:
+            - antifurto-db
+        # Passiamo le variabili d’ambiente lette da application.properties.
+        # Notare:
+        # antifurto-db è il nome del servizio, non "localhost".
+        # Le credenziali corrispondono a quelle definite nel container MySQL.
+        environment:
+            SPRING_DATASOURCE_URL: jdbc:mysql://antifurto-db:3306/antifurto_database
+            SPRING_DATASOURCE_USERNAME: antifurto_app_user
+            SPRING_DATASOURCE_PASSWORD: antifurto_app_pass
+            NOTIFICATION_SERVICE_URL: http://notification-service:8081/notifications
+        # entrypoint dice a docker che cosa deve fare dopo aver avviato il container
+        # in questo caso dobbiamo sovrascrivere l'entrypoint nel dockerfile di antifurto-service
+        # perchè qui dobbiamo aspettare che antifurto-db sia pronto, questo lo facciamo con il file wait-for-db.sh
+        # usa la shell (sh) per eseguire il comando che segue (il -c serve per passargli una stringa di comandi).
+        # chmod +x /app/wait-for-db.sh
+        # Rende il file wait-for-db.sh eseguibile (permessi +x = eXecutable).
+        # Senza questo passaggio, il file non potrebbe essere lanciato dal container.
+        # && serve per eseguire il secondo comando solo se il primo ha successo
+        # se ha successo quindi esegue lo script in wait-for-db.sh
+        entrypoint: sh -c "chmod +x /app/wait-for-db.sh && /app/wait-for-db.sh"
+        # Significa: 
+        # prendi il file wait-for-db.sh che si trova nella cartella ./antifurto-service sul tuo computer
+        # e rendilo accessibile dentro il container in /app/wait-for-db.sh
+        volumes:
+            - ./antifurto-service/wait-for-db.sh:/app/wait-for-db.sh        
+        ports:
+            - "8080:8080"
+    
+    notification-service:
+        image: notification-service:latest
+        build:
+            context: ./notification-service
+            dockerfile: Dockerfile
+        container_name: notification-service-container
+        ports:
+            - "8081:8081"
+
+# Qui dichiariamo il volume antifurto_mysql_data
+# che userà una directory interna di Docker per conservare i dati MySQL anche se il container viene distrutto.
+volumes:
+    antifurto_mysql_data:
