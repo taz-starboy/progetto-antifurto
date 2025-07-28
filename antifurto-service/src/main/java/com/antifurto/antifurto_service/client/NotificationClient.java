@@ -21,11 +21,14 @@ public class NotificationClient {
     @Value("${notification.service.url}")
     private String notificationUrl;
 
+    @Value("${notification.service.api.key}")
+    private String apiKey;
+
     public void sendNotification(NotificationRequest request) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X-API-KEY", "95A9G8Qq42pe");
+        headers.set("X-API-KEY", apiKey);
 
         HttpEntity<NotificationRequest> entity = new HttpEntity<>(request, headers);
 

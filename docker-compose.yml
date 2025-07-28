@@ -12,10 +12,10 @@ services:
         # MYSQL_DATABASE: nome del database che viene creato all’avvio.
         # MYSQL_USER e MYSQL_PASSWORD: utente secondario creato col database.
         environment:
-            MYSQL_ROOT_PASSWORD: root_password_secure
-            MYSQL_DATABASE: antifurto_database
-            MYSQL_USER: antifurto_app_user
-            MYSQL_PASSWORD: antifurto_app_pass
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
         # Espone la porta 3306 (default di MySQL) dal container al tuo host.
         # Serve per collegarti a MySQL con un client esterno, ad esempio DBeaver o IntelliJ.
         ports:
@@ -43,10 +43,11 @@ services:
         # antifurto-db è il nome del servizio, non "localhost".
         # Le credenziali corrispondono a quelle definite nel container MySQL.
         environment:
-            SPRING_DATASOURCE_URL: jdbc:mysql://antifurto-db:3306/antifurto_database
-            SPRING_DATASOURCE_USERNAME: antifurto_app_user
-            SPRING_DATASOURCE_PASSWORD: antifurto_app_pass
-            NOTIFICATION_SERVICE_URL: http://notification-service:8081/notifications
+            SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+            SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+            SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+            NOTIFICATION_SERVICE_URL: ${NOTIFICATION_SERVICE_URL}
+            NOTIFICATION_SERVICE_API_KEY: ${NOTIFICATION_SERVICE_API_KEY}
         # entrypoint dice a docker che cosa deve fare dopo aver avviato il container
         # in questo caso dobbiamo sovrascrivere l'entrypoint nel dockerfile di antifurto-service
         # perchè qui dobbiamo aspettare che antifurto-db sia pronto, questo lo facciamo con il file wait-for-db.sh
@@ -71,6 +72,8 @@ services:
             context: ./notification-service
             dockerfile: Dockerfile
         container_name: notification-service-container
+        environment:
+            AUTHENTICATION_API_KEY: ${NOTIFICATION_SERVICE_API_KEY} 
         ports:
             - "8081:8081"
 
