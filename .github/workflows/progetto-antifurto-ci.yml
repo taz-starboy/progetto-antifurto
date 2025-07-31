@@ -63,11 +63,21 @@ jobs:
             - name: Wait for services
               run: sleep 10
               
-            - name: Test antifurto-service endpoint
+            - name: Wait until antifurto-service is ready
               run: |
-                echo "Controllo endopoint /events di antifurto-service..."
-                curl --fail --retry 5 --retry-delay 5 http://localhost:8080/events
-
+                echo "Controllo endpoint /events di antifurto-service..."
+                for i in {1..10}; do
+                  STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/events || echo "000")
+                  if [ "$STATUS" = "200" ]; then
+                    echo "✅ antifurto-service è pronto (HTTP $STATUS)"
+                    exit 0
+                  else
+                    echo "⏳ Tentativo $i/10 fallito: HTTP $STATUS, riprovo tra 5 secondi..."
+                    sleep 5
+                  fi
+                done
+                echo "❌ Timeout: antifurto-service non ha risposto correttamente dopo 10 tentativi."
+                exit 1
                 
             # Stampiamo i log dei container per verificare che tutto sia partito correttamente.
             - name: Docker Compose Logs
