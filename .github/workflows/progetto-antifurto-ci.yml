@@ -34,39 +34,39 @@ jobs:
         # Clona il codice del tuo repository nel runner GitHub.
         steps:
             - name: Checkout repository
-                uses: actions/checkout@v3
+              uses: actions/checkout@v3
             
             # Installa Java 17, necessario per compilare i progetti Spring Boot.            
             - name: Set up JDK 17
-                uses: actions/setup-java@v3
-                with:
-                    java-version: '17'
-                    distribution: 'temurin'
+              uses: actions/setup-java@v3
+              with:
+                java-version: '17'
+                distribution: 'temurin'
             
             # Compila antifurto-service senza eseguire i test.
             - name: Build antifurto-service
-                run: mvn clean package -DskipTests
-                working-directory: antifurto-service
+              run: mvn clean package -DskipTests
+              working-directory: antifurto-service
             
             # Compila notification-service senza eseguire i test.
             - name: Build notification-service
-                run: mvn clean package -DskipTests
-                working-directory: notification-service
+              run: mvn clean package -DskipTests
+              working-directory: notification-service
             
             # Avvia i container in background con docker compose, 
             # facendo la build di eventuali immagini Docker.
             # Usiamo le env definite prima.
             - name: Docker Compose Up (test build)
-                run: docker compose up --build -d
+              run: docker compose up --build -d
                 
             # Aspettiamo qualche secondo per dare tempo ai container di avviarsi.
             - name: Wait for services
-                run: sleep 10
+              run: sleep 10
                 
             # Stampiamo i log dei container per verificare che tutto sia partito correttamente.
             - name: Docker Compose Logs
-                run: docker compose logs
+              run: docker compose logs
                 
             # Spegniamo e puliamo i container per evitare che rimangano in esecuzione nel runner.   
             - name: Docker Compose Down
-                run: docker compose down
+              run: docker compose down
