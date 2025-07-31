@@ -62,6 +62,12 @@ jobs:
             # Aspettiamo qualche secondo per dare tempo ai container di avviarsi.
             - name: Wait for services
               run: sleep 10
+              
+            - name: Test antifurto-service endpoint
+              run: |
+                echo "Controllo endopoint /events di antifurto-service..."
+                curl --fail --retry 5 --retry-delay 5 http://localhost:8080/events
+
                 
             # Stampiamo i log dei container per verificare che tutto sia partito correttamente.
             - name: Docker Compose Logs
