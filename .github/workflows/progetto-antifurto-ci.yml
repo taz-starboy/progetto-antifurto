@@ -58,26 +58,37 @@ jobs:
             # Usiamo le env definite prima.
             - name: Docker Compose Up (test build)
               run: docker compose up --build -d
-                
-            # Aspettiamo qualche secondo per dare tempo ai container di avviarsi.
-            - name: Wait for services
-              run: sleep 10
-              
-            - name: Wait until antifurto-service is ready
+            
+            # Controllo su endpoint GET /events in antifurto-service              
+            - name: Check antifurto-service GET endpoint
               run: |
-                echo "Controllo endpoint /events di antifurto-service..."
+                echo "Checking endpoint /events in antifurto-service..."
                 for i in {1..10}; do
                   STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/events || echo "000")
                   if [ "$STATUS" = "200" ]; then
-                    echo "✅ antifurto-service è pronto (HTTP $STATUS)"
+                    echo "antifurto-service endpoint response HTTP $STATUS"
                     exit 0
                   else
-                    echo "⏳ Tentativo $i/10 fallito: HTTP $STATUS, riprovo tra 5 secondi..."
+                    echo "try $i/10 failed: HTTP $STATUS, retry in 5 seconds..."
                     sleep 5
                   fi
                 done
-                echo "❌ Timeout: antifurto-service non ha risposto correttamente dopo 10 tentativi."
+                echo "Timeout: antifurto-service non ha risposto correttamente dopo 10 tentativi."
                 exit 1
+            
+            # Controllo su endpoint POST /events in antifurto-service con collegamento a notificatio-service
+            - name: Test POST /events (notifica via notification-service)
+              run: |
+                RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/events \
+                  -H "Content-Type: application/json" \
+                  -d '{"sensorType":"movement","location":"porch","timeStamp":"2025-07-31T11:00:00"}')
+
+                if [ "$RESPONSE" = "200" ]; then
+                  echo "POST /events succeded (notification was sent)"
+                else
+                  echo "POST /events failed (HTTP $RESPONSE)"
+                  exit 1
+                fi
                 
             # Stampiamo i log dei container per verificare che tutto sia partito correttamente.
             - name: Docker Compose Logs
