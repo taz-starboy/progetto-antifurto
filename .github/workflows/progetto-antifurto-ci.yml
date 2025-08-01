@@ -30,6 +30,10 @@ jobs:
             OPENROUTER_API_URL: ${{ secrets.OPENROUTER_API_URL }}
             OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
             AI_MODEL: ${{ secrets.AI_MODEL }}
+            MAIL_HOST: ${{ MAIL_HOST }}
+            MAIL_PORT: ${{ MAIL_PORT }}
+            MAIL_USERNAME: ${{ MAIL_USERNAME }}
+            MAIL_PASSWORD: ${{ MAIL_PASSWORD }}
             
         # Clona il codice del tuo repository nel runner GitHub.
         steps:
@@ -81,7 +85,7 @@ jobs:
               run: |
                 RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/events \
                   -H "Content-Type: application/json" \
-                  -d '{"sensorType":"movement","location":"porch","timeStamp":"2025-07-31T11:00:00"}')
+                  -d '{"sensorType":"movement","location":"porch","timeStamp":"2025-07-31T11:00:00","destinatioType":"email","destination":"mario.rossi@test.com"}')
 
                 if [ "$RESPONSE" = "200" ]; then
                   echo "POST /events succeded (notification was sent)"
