@@ -34,6 +34,6 @@ public class NotificationController {
         String generatedNotification = aiClient.getAiNotification(request);
         log.info("\nGenerated notification: {}", generatedNotification);
 
-        return ResponseEntity.ok(senderService.sendNotification(request));
+        return ResponseEntity.ok(senderService.sendNotification(request, generatedNotification));
     }
 }
