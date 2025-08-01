@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AiRequestBodyDTO {
+public class AiRequest {
 
     private String model;
     private List<Message> messages;

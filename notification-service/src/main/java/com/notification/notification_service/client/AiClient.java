@@ -3,7 +3,7 @@ package com.notification.notification_service.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.notification.notification_service.dto.AiRequestBodyDTO;
+import com.notification.notification_service.dto.AiRequest;
 import com.notification.notification_service.dto.NotificationRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +44,7 @@ public class AiClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         /* SET BODY REQUEST INTO DTO */
-        AiRequestBodyDTO requestBody = generateRequestBody(request);
+        AiRequest requestBody = generateRequestBody(request);
 
         try {
             /* convert DTO into json */
@@ -71,15 +71,15 @@ public class AiClient {
         return root.get("choices").get(0).get("message").get("content").asText();
     }
 
-    private AiRequestBodyDTO generateRequestBody(NotificationRequest request) {
+    private AiRequest generateRequestBody(NotificationRequest request) {
 
         String systemPrompt = "Sei un assistente che genera brevi notifiche antifurto (massimo 500 caratteri).";
         String userPrompt = "Genera una notifica per: " + request.getSensorType() + " rilevato in " + request.getLocation() + " alle " + request.getTimeStamp();
 
-        AiRequestBodyDTO.Message systemMessage = new AiRequestBodyDTO.Message("system", systemPrompt);
-        AiRequestBodyDTO.Message userMessage = new AiRequestBodyDTO.Message("user", userPrompt);
+        AiRequest.Message systemMessage = new AiRequest.Message("system", systemPrompt);
+        AiRequest.Message userMessage = new AiRequest.Message("user", userPrompt);
 
-        AiRequestBodyDTO dto = new AiRequestBodyDTO();
+        AiRequest dto = new AiRequest();
         dto.setModel(aiModel);
         dto.setMessages(List.of(systemMessage, userMessage));
         dto.setMaxTokens(150);
