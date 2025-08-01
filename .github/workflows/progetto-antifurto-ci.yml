@@ -30,10 +30,10 @@ jobs:
             OPENROUTER_API_URL: ${{ secrets.OPENROUTER_API_URL }}
             OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
             AI_MODEL: ${{ secrets.AI_MODEL }}
-            MAIL_HOST: ${{ MAIL_HOST }}
-            MAIL_PORT: ${{ MAIL_PORT }}
-            MAIL_USERNAME: ${{ MAIL_USERNAME }}
-            MAIL_PASSWORD: ${{ MAIL_PASSWORD }}
+            MAIL_HOST: ${{ secrets.MAIL_HOST }}
+            MAIL_PORT: ${{ secrets.MAIL_PORT }}
+            MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+            MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
             
         # Clona il codice del tuo repository nel runner GitHub.
         steps:
