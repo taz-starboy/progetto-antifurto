@@ -85,7 +85,7 @@ jobs:
               run: |
                 RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/events \
                   -H "Content-Type: application/json" \
-                  -d '{"sensorType":"movement","location":"porch","timeStamp":"2025-07-31T11:00:00","destinatioType":"email","destination":"mario.rossi@test.com"}')
+                  -d '{"sensorType":"movement","location":"porch","timeStamp":"2025-07-31T11:00:00","destinationType":"email","destination":"mario.rossi@test.com"}')
 
                 if [ "$RESPONSE" = "200" ]; then
                   echo "POST /events succeded (notification was sent)"
