@@ -21,6 +21,12 @@ public class SensorEventRequest {
 
     @NotNull
     private LocalDateTime timeStamp;
+
+    @NotBlank
+    private String destinationType;
+
+    @NotBlank
+    private String destination;
 }
 /*
 * @NotNull

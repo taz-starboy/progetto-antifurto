@@ -21,19 +21,22 @@ public class SensorEventService {
 
     public SensorEvent saveEvent(SensorEventRequest request) {
 
-        // try to call notification-service
-        try {
-            notificationClient.sendNotification(new NotificationRequest(request.getSensorType(), request.getLocation(), request.getTimeStamp()));
-        } catch (Exception e) {
-            log.warn("Notifica non inviata: {}", e.getMessage());
-        }
+        // send request to notification-service
+        NotificationRequest notificationRequest = new NotificationRequest();
+        notificationRequest.setSensorType(request.getSensorType());
+        notificationRequest.setLocation(request.getLocation());
+        notificationRequest.setTimeStamp(request.getTimeStamp());
+        notificationRequest.setDestinationType(request.getDestinationType());
+        notificationRequest.setDestination(request.getDestination());
+        notificationClient.sendNotification(notificationRequest);
 
-        // create SensorEvent and save to db
+        // create SensorEvent entity and save it to db
         SensorEvent event = new SensorEvent();
         event.setSensorType(request.getSensorType());
         event.setLocation(request.getLocation());
         event.setTimeStamp(request.getTimeStamp());
-
+        event.setDestinationType(request.getDestinationType());
+        event.setDestination(request.getDestination());
         return repository.save(event);
     }
 

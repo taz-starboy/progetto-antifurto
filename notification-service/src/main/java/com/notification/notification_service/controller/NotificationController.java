@@ -2,6 +2,7 @@ package com.notification.notification_service.controller;
 
 import com.notification.notification_service.client.AiClient;
 import com.notification.notification_service.dto.NotificationRequest;
+import com.notification.notification_service.service.NotificationSenderService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class NotificationController {
     @Autowired
     private AiClient aiClient;
 
+    @Autowired
+    private NotificationSenderService senderService;
+
     @PostMapping
     public ResponseEntity<String> getNotification(@RequestBody @Valid NotificationRequest request, @RequestHeader("X-API-KEY") String apiKey) {
 
@@ -27,8 +31,9 @@ public class NotificationController {
             return ResponseEntity.status(401).body("Unauthorized");
         }
 
-        log.info(aiClient.getAiNotification(request));
+        String generatedNotification = aiClient.getAiNotification(request);
+        log.info("\nGenerated notification: {}", generatedNotification);
 
-        return ResponseEntity.ok("\nNotifica ricevuta con successo");
+        return ResponseEntity.ok(senderService.sendNotification(request));
     }
 }

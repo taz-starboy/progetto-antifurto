@@ -13,4 +13,6 @@ public class NotificationRequest {
     private String sensorType;
     private String location;
     private LocalDateTime timeStamp;
+    private String destinationType;
+    private String destination;
 }

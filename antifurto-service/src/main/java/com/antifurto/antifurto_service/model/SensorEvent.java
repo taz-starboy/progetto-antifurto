@@ -22,6 +22,8 @@ public class SensorEvent {
     private String sensorType;
     private String location;
     private LocalDateTime timeStamp;
+    private String destinationType;
+    private String destination;
 }
 /*
     @Entity
