@@ -2,13 +2,11 @@ package com.notification.notification_service.service;
 
 import com.notification.notification_service.dto.NotificationRequest;
 import jakarta.validation.constraints.NotBlank;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@NoArgsConstructor
 public class NotificationSenderService {
 
     public String sendNotification(NotificationRequest request) {

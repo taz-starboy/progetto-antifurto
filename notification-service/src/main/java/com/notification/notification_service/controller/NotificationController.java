@@ -25,7 +25,7 @@ public class NotificationController {
     private NotificationSenderService senderService;
 
     @PostMapping
-    public ResponseEntity<String> getNotification(@RequestBody @Valid NotificationRequest request, @RequestHeader("X-API-KEY") String apiKey) {
+    public ResponseEntity<String> getNotificationRequest(@RequestBody @Valid NotificationRequest request, @RequestHeader("X-API-KEY") String apiKey) {
 
         if (!authenticationKey.equals(apiKey)) {
             return ResponseEntity.status(401).body("Unauthorized");
