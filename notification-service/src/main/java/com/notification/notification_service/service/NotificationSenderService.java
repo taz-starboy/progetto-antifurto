@@ -27,11 +27,11 @@ public class NotificationSenderService {
     @Value("${twilio.service.auth.token}")
     private String twilioAuthToken;
 
-    @Value("${twilio.service.from.whatsapp}")
-    private String whatsappFrom;
+    @Value("${twilio.service.tel.from}")
+    private String twilioTelFrom;
 
-    @Value("${notification.service.tel.test}")
-    private String testTel;
+    @Value("${notification.service.test.tel.to}")
+    private String testTelTo;
 
     private final JavaMailSender mailSender;
 
@@ -45,15 +45,21 @@ public class NotificationSenderService {
     }
 
     private String sendWhatsApp(@NotBlank String destination, String notification) {
-        Twilio.init(this.twilioSID, this.twilioAuthToken);
 
-        Message message = Message.creator(
-                new PhoneNumber("whatsapp:" + this.testTel),
-                new PhoneNumber(this.whatsappFrom),
-                notification
-        ).create();
+        try {
+            Twilio.init(this.twilioSID, this.twilioAuthToken);
 
-        return "\nWhatsApp message sent: " + message.getSid();
+            Message message = Message.creator(
+                    new PhoneNumber("whatsapp:" + this.testTelTo),
+                    new PhoneNumber("whatsapp:" + this.twilioTelFrom),
+                    notification
+            ).create();
+            return "\nNotification Whatsapp SUCCEEDED: " + message.getSid();
+        } catch (Exception e) {
+            log.error("\nAn exception occurred trying to send whatsapp message: {}", e.getMessage());
+            return "\nNotification Whatsapp FAILED.";
+        }
+
     }
 
     private String sendEmail(@NotBlank String destination, String notification) {
