@@ -30,18 +30,22 @@ public class NotificationSenderService {
     @Value("${twilio.service.tel.from}")
     private String twilioTelFrom;
 
-    @Value("${notification.service.test.tel.to}")
-    private String testTelTo;
-
     private final JavaMailSender mailSender;
 
 
     public String sendNotification(NotificationRequest request, String notification) {
 
-        if (request.getDestinationType().equals("email")) {
-            return sendEmail(request.getDestination(), notification);
+        String sendingStatus;
+
+        switch (request.getDestinationType()) {
+            case "email":
+                sendingStatus = sendEmail(request.getDestination(), notification);
+            case "whatsapp":
+                sendingStatus = sendWhatsApp(request.getDestination(), notification);
+            default:
+                sendingStatus = String.format("\nDestination Type %s is not recognized.", request.getDestinationType());
         }
-        return sendWhatsApp(request.getDestination(), notification);
+        return sendingStatus;
     }
 
     private String sendWhatsApp(@NotBlank String destination, String notification) {
@@ -50,7 +54,7 @@ public class NotificationSenderService {
             Twilio.init(this.twilioSID, this.twilioAuthToken);
 
             Message message = Message.creator(
-                    new PhoneNumber("whatsapp:" + this.testTelTo),
+                    new PhoneNumber("whatsapp:" + destination),
                     new PhoneNumber("whatsapp:" + this.twilioTelFrom),
                     notification
             ).create();
