@@ -84,7 +84,6 @@ services:
             TWILIO_SID: ${TWILIO_SID}
             TWILIO_TOKEN: ${TWILIO_TOKEN}
             TWILIO_TEL_FROM: ${TWILIO_TEL_FROM}
-            TEST_TEL_TO: ${TEST_TEL_TO}
         ports:
             - "8081:8081"
 
