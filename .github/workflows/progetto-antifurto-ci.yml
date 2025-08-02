@@ -37,6 +37,7 @@ jobs:
             TWILIO_SID: ${{ secrets.TWILIO_SID }}
             TWILIO_TOKEN: ${{ secrets.TWILIO_TOKEN }}
             TWILIO_TEL_FROM: ${{ secrets.TWILIO_TEL_FROM }}
+            TEST_TEL_TO: ${{ secrets.TEST_TEL_TO }}
             
         # Clona il codice del tuo repository nel runner GitHub.
         steps:
@@ -84,11 +85,25 @@ jobs:
                 exit 1
             
             # Controllo su endpoint POST /events in antifurto-service con collegamento a notificatio-service
-            - name: Test POST /events (notifica via notification-service)
+            - name: Test POST /events (Email notification)
               run: |
                 RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/events \
                   -H "Content-Type: application/json" \
                   -d '{"sensorType":"movement","location":"porch","timeStamp":"2025-07-31T11:00:00","destinationType":"email","destination":"mario.rossi@test.com"}')
+
+                if [ "$RESPONSE" = "200" ]; then
+                  echo "POST /events succeded (notification was sent)"
+                else
+                  echo "POST /events failed (HTTP $RESPONSE)"
+                  exit 1
+                fi
+            
+            # Controllo su endpoint POST /events in antifurto-service con collegamento a notificatio-service
+            - name: Test POST /events (Whatsapp notification)
+              run: |
+                RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/events \
+                  -H "Content-Type: application/json" \
+                  -d '{"sensorType":"movement","location":"bedroom","timeStamp":"2025-08-02T11:00:00","destinationType":"whatsapp","destination":"'"${TEST_TEL_TO}"'"}')
 
                 if [ "$RESPONSE" = "200" ]; then
                   echo "POST /events succeded (notification was sent)"
