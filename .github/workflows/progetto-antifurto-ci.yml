@@ -85,9 +85,9 @@ jobs:
             # Controllo su endpoint POST /events in antifurto-service con collegamento a notificatio-service
             - name: Test POST /events (Email notification)
               run: |
-                RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/events \
+                RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8081/notifications \
                   -H "Content-Type: application/json" \
-                  -d '{"sensorType":"movement","location":"porch","timeStamp":"2025-07-31T11:00:00","destinationType":"email","destination":"mario.rossi@test.com"}')
+                  -d '{"sensorType":"movement","location":"porch","timeStamp":"2025-08-03T11:00:00","destinationType":"email","destination":"mario.rossi@test.com"}')
 
                 if [ "$RESPONSE" = "200" ]; then
                   echo "POST /events succeded (notification was sent)"
@@ -99,9 +99,9 @@ jobs:
             # Controllo su endpoint POST /events in antifurto-service con collegamento a notificatio-service
             - name: Test POST /events (Whatsapp notification)
               run: |
-                RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/events \
+                RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8081/notifications \
                   -H "Content-Type: application/json" \
-                  -d '{"sensorType":"movement","location":"bedroom","timeStamp":"2025-08-02T11:00:00","destinationType":"whatsapp","destination":"'"${TEST_TEL_TO}"'"}')
+                  -d '{"sensorType":"movement","location":"bedroom","timeStamp":"2025-08-03T11:00:00","destinationType":"whatsapp","destination":"'"${TEST_TEL_TO}"'"}')
 
                 if [ "$RESPONSE" = "200" ]; then
                   echo "POST /events succeded (notification was sent)"
