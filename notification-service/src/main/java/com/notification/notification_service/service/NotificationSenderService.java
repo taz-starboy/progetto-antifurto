@@ -33,22 +33,19 @@ public class NotificationSenderService {
     private final JavaMailSender mailSender;
 
 
-    public String sendNotification(NotificationRequest request, String notification) {
+    public boolean sendNotificationToClient(NotificationRequest request, String notification) {
 
-        String sendingStatus;
-
-        switch (request.getDestinationType()) {
-            case "email":
-                sendingStatus = sendEmail(request.getDestination(), notification);
-            case "whatsapp":
-                sendingStatus = sendWhatsApp(request.getDestination(), notification);
-            default:
-                sendingStatus = String.format("\nDestination Type %s is not recognized.", request.getDestinationType());
-        }
-        return sendingStatus;
+        return switch (request.getDestinationType()) {
+            case "email" -> sendEmail(request.getDestination(), notification);
+            case "whatsapp" -> sendWhatsApp(request.getDestination(), notification);
+            default -> {
+                log.error("\nDestination Type '{}' is not recognized.", request.getDestinationType());
+                yield false;
+            }
+        };
     }
 
-    private String sendWhatsApp(@NotBlank String destination, String notification) {
+    private boolean sendWhatsApp(@NotBlank String destination, String notification) {
 
         try {
             Twilio.init(this.twilioSID, this.twilioAuthToken);
@@ -58,15 +55,17 @@ public class NotificationSenderService {
                     new PhoneNumber("whatsapp:" + this.twilioTelFrom),
                     notification
             ).create();
-            return "\nNotification Whatsapp SUCCEEDED: " + message.getSid();
+            log.info("\nNotification Whatsapp SUCCEEDED");
+            return true;
+
         } catch (Exception e) {
             log.error("\nAn exception occurred trying to send whatsapp message: {}", e.getMessage());
-            return "\nNotification Whatsapp FAILED.";
+            return false;
         }
 
     }
 
-    private String sendEmail(@NotBlank String destination, String notification) {
+    private boolean sendEmail(@NotBlank String destination, String notification) {
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(destination);
@@ -76,10 +75,11 @@ public class NotificationSenderService {
 
         try {
             mailSender.send(message);
-            return "\nNotification Email SUCCESS.";
+            log.info("\nNotification Email SUCCESS.");
+            return true;
         } catch (MailException e) {
-            log.error("\nSomething went wrong sending email: {}", e.getMessage());
-            return "\nNotification Email FAILED.";
+            log.error("\nAn exception occurred trying to send email: {}", e.getMessage());
+            return false;
         }
     }
 }

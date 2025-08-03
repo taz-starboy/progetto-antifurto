@@ -28,14 +28,3 @@ public class SensorEventRequest {
     @NotBlank
     private String destination;
 }
-/*
-* @NotNull
-    * Viene da javax.validation.constraints.NotNull
-    * Verifica che il campo non sia null
-    * Accetta stringhe vuote, numeri a zero, liste vuote, ecc.
-    *
-* @NotBlank
-    * Viene da javax.validation.constraints.NotBlank
-    * Verifica che il campo non sia null né vuoto né solo spazi
-    * Usata solo con String
-* */

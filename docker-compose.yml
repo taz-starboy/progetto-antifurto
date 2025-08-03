@@ -47,7 +47,6 @@ services:
             SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
             SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
             NOTIFICATION_SERVICE_URL: ${NOTIFICATION_SERVICE_URL}
-            NOTIFICATION_SERVICE_API_KEY: ${NOTIFICATION_SERVICE_API_KEY}
         # entrypoint dice a docker che cosa deve fare dopo aver avviato il container
         # in questo caso dobbiamo sovrascrivere l'entrypoint nel dockerfile di antifurto-service
         # perchè qui dobbiamo aspettare che antifurto-db sia pronto, questo lo facciamo con il file wait-for-db.sh
@@ -73,7 +72,6 @@ services:
             dockerfile: Dockerfile
         container_name: notification-service-container
         environment:
-            AUTHENTICATION_API_KEY: ${NOTIFICATION_SERVICE_API_KEY}
             OPENROUTER_API_URL: ${OPENROUTER_API_URL}
             OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
             AI_MODEL: ${AI_MODEL}

@@ -1,12 +1,13 @@
 package com.notification.notification_service.controller;
 
 import com.notification.notification_service.client.AiClient;
+import com.notification.notification_service.dto.HttpNotificationResponse;
 import com.notification.notification_service.dto.NotificationRequest;
 import com.notification.notification_service.service.NotificationSenderService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/notifications")
 public class NotificationController {
 
-    @Value("${service.authorization.api.key}")
-    private String authenticationKey;
-
     @Autowired
     private AiClient aiClient;
 
@@ -25,15 +23,14 @@ public class NotificationController {
     private NotificationSenderService senderService;
 
     @PostMapping
-    public ResponseEntity<String> getNotificationRequest(@RequestBody @Valid NotificationRequest request, @RequestHeader("X-API-KEY") String apiKey) {
+    public ResponseEntity<HttpNotificationResponse> getNotificationRequest(@RequestBody @Valid NotificationRequest request) {
 
-        if (!authenticationKey.equals(apiKey)) {
-            return ResponseEntity.status(401).body("Unauthorized");
-        }
+        HttpNotificationResponse responseEntity = aiClient.getAiNotification(request);
+        boolean isSentToClient = senderService.sendNotificationToClient(request, responseEntity.getGeneratedNotification());
+        responseEntity.setSentToClient(isSentToClient);
 
-        String generatedNotification = aiClient.getAiNotification(request);
-        log.info("\nGenerated notification: {}", generatedNotification);
+        HttpStatus httpStatus = isSentToClient ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 
-        return ResponseEntity.ok(senderService.sendNotification(request, generatedNotification));
+        return ResponseEntity.status(httpStatus).body(responseEntity);
     }
 }

@@ -25,8 +25,6 @@ jobs:
             SPRING_DATASOURCE_USERNAME: ${{ secrets.MYSQL_USER }}
             SPRING_DATASOURCE_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
             NOTIFICATION_SERVICE_URL: ${{ secrets.NOTIFICATION_SERVICE_URL }}
-            NOTIFICATION_SERVICE_API_KEY: ${{ secrets.NOTIFICATION_SERVICE_API_KEY }}
-            AUTHENTICATION_API_KEY: ${{ secrets.NOTIFICATION_SERVICE_API_KEY }}
             OPENROUTER_API_URL: ${{ secrets.OPENROUTER_API_URL }}
             OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
             AI_MODEL: ${{ secrets.AI_MODEL }}
