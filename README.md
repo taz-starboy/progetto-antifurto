@@ -22,8 +22,8 @@ The **IoT Alarm System Project** is a smart security system based on microservic
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/iot-alarm-project.git
-   cd iot-alarm-project
+   git clone https://github.com/your-username/progetto-antifurto.git
+   cd progetto-antifurto
    ```
 
 2. Start the services with Docker Compose:
@@ -121,5 +121,5 @@ A Postman collection is available with the following requests:
 
 ## 👤 Contact
 
-name: marcos bendezu
-email: taz23@hotmail.it
+- Name: Marcos Bendezu
+- Email: taz23@hotmail.it
