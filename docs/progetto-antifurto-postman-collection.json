@@ -1,0 +1,80 @@
+{
+  "info": {
+    "name": "Progetto Antifurto IoT",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /events",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/events",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "events"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /events",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"sensorType\": \"smoke\",\n    \"location\": \"garage\",\n    \"timeStamp\": \"2025-08-03T11:25:00\",\n    \"destinationType\": \"whatsapp\",\n    \"destination\": \"+391234567890\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/events",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "events"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /notifications",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"sensorType\": \"smoke\",\n    \"location\": \"garage\",\n    \"timeStamp\": \"2025-08-03T11:25:00\",\n    \"destinationType\": \"whatsapp\",\n    \"destination\": \"+391234567890\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/notifications",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "notifications"
+          ]
+        }
+      }
+    }
+  ]
+}
